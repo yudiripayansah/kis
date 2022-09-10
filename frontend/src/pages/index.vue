@@ -1,9 +1,9 @@
 <template>
   <div class="w-100 d-flex">
     <router-view></router-view>
-    <transition name="slide-fade">
+    <!-- <transition name="slide-fade">
     <TabMenu v-show="$route.name != 'Dashboard'"/>
-    </transition>
+    </transition> -->
   </div>
 </template>
 <script>

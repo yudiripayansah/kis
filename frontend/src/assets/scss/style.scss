@@ -11,7 +11,7 @@ body {
   font-weight: 400;
 }
 a {
-  color: #305F72;
+  color: #0eb8b0;
   font-size: 12px;
   font-weight: 700;
   &:hover,&:focus,&:active,&:visited {
@@ -35,7 +35,7 @@ a {
   font-size: 12px;
 }
 #baik-app {
-  background: #5AA6C8;
+  background: #812d2b;
   width: 100%;
   overflow-x: hidden;
   overflow-y: auto;
@@ -52,7 +52,7 @@ a {
   border-radius: 3px;
 }
 .fm-input {
-  background: #305F72;
+  background: #0eb8b0;
   color: white;
   border-radius: 15px;
   border: none;
@@ -63,7 +63,7 @@ a {
   }
 }
 .fm-btn {
-  background: #5AA6C8;
+  background: #802d2a;
   height: 35px;
   color: white;
   border: none;
@@ -181,7 +181,7 @@ a {
   .pg-header-nav-btn {
     position: absolute;
     top: 10%;
-    right: 5%;
+    left: 5%;
     background: rgba($color: #fff, $alpha: .5);
     width: 44px;
     height: 44px;
@@ -263,51 +263,58 @@ a {
   flex-wrap: wrap;
   justify-content: space-around;
   align-items: center;
-  max-width: 324px;
   width: 100%;
   margin: 0 auto;
-  margin-top: 50px;
+  margin-top: 30px;
   a {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    width: 100%;
     div {
       border-radius: 25px;
       background: #EAF9FE;
       color: #305F72;
-      width: 80px;
+      width: 100%;
       height: 80px;
       display: flex;
       justify-content: center;
       align-items: center;
       flex-direction: column;
       font-size: 30px;
+      font-weight: bolder;
     }
     span {
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 700;
       color: #305F72;
       margin-top: 5px;
     }
-    &.pembiayaan {
+    &.color-1 {
       div {
         background: #F3E7F0;
         color: #BB7F87;
       }
     }
-    &.tabungan {
+    &.color-2 {
       div {
         background: #FFF1EF;
         color: #F19895;
       }
     }
-    &.transaksi {
+    &.color-3 {
       div {
         background: #FFF5E5;
         color: #BB7F87;
+      }
+    }
+    &.color-4 {
+      div {
+        background: #e5ffe9;
+        color: #7fbb86;
       }
     }
   }

@@ -3,10 +3,10 @@
     <div class="pg-header pt-5 pb-3">
       <img :src="app.koperasi_logo" alt="">
       <!-- <h1>Mobile {{app.koperasi_name}}</h1> -->
-      <h6>Dashboard</h6>
+      <h6>Saldo</h6>
       <div class="pg-header-nav-btn">
-        <router-link to="/profile">
-          <i class="fas fa-cog"></i>
+        <router-link to="/dashboard">
+          <i class="fas fa-arrow-left"></i>
         </router-link>
       </div>
     </div>
@@ -24,37 +24,29 @@
           <i class="fas fa-sign-out-alt"></i>
         </div>
       </div>
-      <div class="pg-dashboard-nav">
-        <router-link to="/saldo/anggota">
-          <div>
-            <span>Saldo Simpok</span>
-            Rp 20.000.000
+      <div class="pg-saldo py-3 d-flex flex-column align-items-center">
+        <h4 class="mb-4">Histori</h4>
+        <div class="pg-saldo-items w-100">
+          <div class="pg-saldo-item mb-3">
+            <h6>10 September 2022</h6>
+            <div class="d-flex justify-content-between align-items-end">
+              <label>Saldo Awal</label>
+              <span>Rp 100.000</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-end">
+              <label>Setor</label>
+              <span>Rp 100.000</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-end">
+              <label>Tarik</label>
+              <span>Rp 100.000</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-end">
+              <label>Saldo Akhir</label>
+              <span>Rp 100.000</span>
+            </div>
           </div>
-        </router-link>
-        <router-link to="/saldo/simwa" class="color-1">
-          <div>
-            <span>Saldo Simwa</span>
-            Rp 20.000.000
-          </div>
-        </router-link>
-        <router-link to="/saldo/sukarela" class="color-2">
-          <div>
-            <span>Saldo Sukarela</span>
-            Rp 20.000.000
-          </div>
-        </router-link>
-        <router-link to="/saldo/tabungan-berjangka" class="color-3">
-          <div>
-            <span>Saldo Tabungan Berjangka</span>
-            Rp 20.000.000
-          </div>
-        </router-link>
-        <router-link to="/saldo/pembiayaan" class="color-4">
-          <div>
-            <span>Saldo Pembiayaan</span>
-            Rp 20.000.000
-          </div>
-        </router-link>
+        </div>
       </div>
     </div>
   </div>
