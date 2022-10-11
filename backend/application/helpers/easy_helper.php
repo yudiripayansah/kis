@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CodeIgniter
  *
@@ -35,7 +36,7 @@
  * @since Version 1.0.0
  * @filesource
  */
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 /**
  * CodeIgniter Array Helpers
@@ -47,91 +48,54 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @link    https://codeigniter.com/user_guide/helpers/array_helper.html
  */
 
-function joinDate($month,$year){
-  if($month == '01'){
-    $bulan = 'Januari';
-  } else if($month == '02'){
-    $bulan = 'Februari';
-  } else if($month == '03'){
-    $bulan = 'Maret';
-  } else if($month == '04'){
-    $bulan = 'April';
-  } else if($month == '05'){
-    $bulan = 'Mei';
-  } else if($month == '06'){
-    $bulan = 'Juni';
-  } else if($month == '07'){
-    $bulan = 'Juli';
-  } else if($month == '08'){
-    $bulan = 'Agustus';
-  } else if($month == '09'){
-    $bulan = 'September';
-  } else if($month == '10'){
-    $bulan = 'Oktober';
-  } else if($month == '11'){
-    $bulan = 'Nopember';
-  } else if($month == '12'){
-    $bulan = 'Desember';
-  }
-
-  $join = 'Bergabung pada '.$bulan.', '.$year;
-
-  return $join;
+function uuid()
+{
+  return sprintf(
+    '%04x%04x%04x%03x4%04x%04x%04x%04x',
+    mt_rand(0, 65535),
+    mt_rand(0, 65535),
+    mt_rand(0, 65535),
+    mt_rand(0, 4095),
+    bindec(substr_replace(sprintf('%016b', mt_rand(0, 65535)), '01', 6, 2)),
+    mt_rand(0, 65535),
+    mt_rand(0, 65535),
+    mt_rand(0, 65535)
+  );
 }
 
-function datepicker($date){
-  $text = str_replace('/','-',$date);
-  $text = date('Y-m-d',strtotime($text));
+function datepicker($date)
+{
+  $text = str_replace('/', '-', $date);
+  $text = date('Y-m-d', strtotime($text));
 
   return $text;
 }
 
-function date_indo($date){
-  $text = str_replace('-','/',$date);
-  $text = date('d/m/Y',strtotime($text));
+function date_indo($date)
+{
+  $text = str_replace('-', '/', $date);
+  $text = date('d/m/Y', strtotime($text));
 
   return $text;
 }
 
-function datereport($date){
-  $text = date('Y-m-d',strtotime($date));
+function datereport($date)
+{
+  $text = date('Y-m-d', strtotime($date));
 
   return $text;
 }
 
-function currency($currency){
-  $text = number_format($currency,0,',','.');
+function currency($currency)
+{
+  $text = number_format($currency, 0, ',', '.');
 
   return $text;
 }
 
-function numeric($number){
-  $text = str_replace('.','',$number);
+function numeric($number)
+{
+  $text = str_replace('.', '', $number);
 
   return $text;
-}
-
-function hitung_hari_allday($tgl_cuti,$tgl_cuti2){
-  $hari = 0;
-
-  while(strtotime($tgl_cuti) <= strtotime($tgl_cuti2)){
-    $tgl_cuti = date('Y-m-d', strtotime('+ 1 DAY',strtotime($tgl_cuti)));
-    $hari++;
-  }
-
-  return $hari;
-}
-
-function hitung_hari_weekend($tgl_cuti, $tgl_cuti2){
-  $hari = 0;
-
-  while(strtotime($tgl_cuti) <= strtotime($tgl_cuti2)){
-    if(date('l',strtotime($tgl_cuti)) != 'Saturday' && date('l',strtotime($tgl_cuti)) != 'Sunday'){
-      $hari++;
-    }
-
-    $tgl_cuti = date('Y-m-d', strtotime(' + 1 DAY',strtotime($tgl_cuti)));
-  }
-
-  return $hari;
 }

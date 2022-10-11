@@ -5,7 +5,7 @@ class Model_information extends CI_Model
 
 	function check_token($token)
 	{
-		$sql = "SELECT COUNT(*) AS cnt FROM app_user WHERE token = ?";
+		$sql = "SELECT COUNT(*) AS cnt FROM kis_user WHERE token = ?";
 
 		$param = array($token);
 
@@ -16,7 +16,7 @@ class Model_information extends CI_Model
 
 	function check_expired($now, $token)
 	{
-		$sql = "SELECT (?::DATE - last_login::DATE) AS expired FROM app_user WHERE token = ?";
+		$sql = "SELECT (?::DATE - last_login::DATE) AS expired FROM kis_user WHERE token = ?";
 
 		$param = array($now, $token);
 
@@ -25,100 +25,123 @@ class Model_information extends CI_Model
 		return $query->row_array();
 	}
 
-	function get_info($nik)
+	function get_cif($noanggota)
+	{
+		$sql = "SELECT * FROM kis_anggota WHERE noanggota = ?";
+
+		$param = array($noanggota);
+
+		$query = $this->db->query($sql, $param);
+
+		return $query->row_array();
+	}
+
+	function get_deposito($noanggota)
+	{
+		$sql = "SELECT COALESCE(SUM(saldo),0) AS saldo_deposito FROM kis_deposito WHERE status = '1' AND noanggota = ?";
+
+		$param = array($noanggota);
+
+		$query = $this->db->query($sql, $param);
+
+		return $query->row_array();
+	}
+
+	function get_financing($noanggota)
+	{
+		$sql = "SELECT COALESCE(SUM(saldo_pkk+saldo_mgn),0) AS saldo_outstanding FROM kis_pembiayaan WHERE status = '1' AND noanggota = ?";
+
+		$param = array($noanggota);
+
+		$query = $this->db->query($sql, $param);
+
+		return $query->row_array();
+	}
+
+	function get_sum_cif()
 	{
 		$sql = "SELECT
-		id,
-		(CASE WHEN kategori = '1' THEN
-			'Hari Kerja'
-		WHEN kategori = '2' THEN
-			'Kepegawaian'
-		WHEN kategori = '3' THEN
-			'Penggajian'
-		ELSE
-			'Lain-lain'
-		END) AS kategori,
-		judul,
-		gambar,
-		pesan,
-		created_date
-		FROM app_info WHERE penerima = '0'
+		COUNT(*) AS jumlah,
+		COALESCE(SUM(simpok),0) AS simpok,
+		COALESCE(SUM(simwa),0) AS simwa,
+		COALESCE(SUM(sukarela),0) AS sukarela
+		FROM kis_anggota";
 
-		UNION ALL
+		$query = $this->db->query($sql);
 
-		SELECT
-		ai.id,
-		(CASE WHEN ai.kategori = '1' THEN
-			'Hari Kerja'
-		WHEN ai.kategori = '2' THEN
-			'Kepegawaian'
-		WHEN ai.kategori = '3' THEN
-			'Penggajian'
-		ELSE
-			'Lain-lain'
-		END) AS kategori,
-		ai.judul,
-		ai.gambar,
-		ai.pesan,
-		ai.created_date
-		FROM app_info AS ai
-		JOIN app_info_receipt AS air ON air.id_info = ai.id
-		WHERE ai.penerima = '1' AND air.nik = ? ";
+		return $query->row_array();
+	}
 
-		$param = array($nik);
+	function get_sum_deposito()
+	{
+		$sql = "SELECT COALESCE(SUM(saldo),0) AS saldo_deposito FROM kis_deposito WHERE status = '1'";
 
-		$sql .= "ORDER BY 4 DESC";
+		$query = $this->db->query($sql);
+
+		return $query->row_array();
+	}
+
+	function get_sum_financing()
+	{
+		$sql = "SELECT COALESCE(SUM(saldo_pkk+saldo_mgn),0) AS saldo_outstanding FROM kis_pembiayaan WHERE status = '1'";
+
+		$query = $this->db->query($sql);
+
+		return $query->row_array();
+	}
+
+	function get_detail_saving($noanggota, $jenis_trx)
+	{
+		$sql = "SELECT * FROM kis_trx_simpanan WHERE noanggota = ? AND jenis_trx = ? ORDER BY trx_date ASC";
+
+		$param = array($noanggota, $jenis_trx);
 
 		$query = $this->db->query($sql, $param);
 
 		return $query->result_array();
 	}
 
-	function get_info_detail($id)
+	function get_detail_deposito($noanggota)
 	{
 		$sql = "SELECT
-		id,
-		(CASE WHEN kategori = '1' THEN
-			'Hari Kerja'
-		WHEN kategori = '2' THEN
-			'Kepegawaian'
-		WHEN kategori = '3' THEN
-			'Penggajian'
-		ELSE
-			'Lain-lain'
-		END) AS kategori,
-		judul,
-		gambar,
-		pesan,
-		created_date
-		FROM app_info WHERE id = ?";
+		ktd.notran,
+		ktd.nomrek,
+		ktd.nourut,
+		ktd.trx_date,
+		ktd.saldo_awal,
+		ktd.amount_trx,
+		ktd.saldo
+		FROM kis_trx_deposito AS ktd
+		JOIN kis_deposito AS kd ON kd.nomrek = ktd.nomrek
+		WHERE kd.noanggota = ?
+		ORDER BY ktd.trx_date ASC";
 
-		$param = array($id);
+		$param = array($noanggota);
 
 		$query = $this->db->query($sql, $param);
 
-		return $query->row_array();
+		return $query->result_array();
 	}
 
-	function check_email($nik)
+	function get_detail_financing($noanggota)
 	{
 		$sql = "SELECT
-		ak.nik,
-		ak.email,
-		au.username
-		FROM app_karyawan AS ak
-		JOIN app_user AS au ON au.nik = ak.nik
-		WHERE ak.nik = ?";
+		ktp.notran,
+		ktp.tgl_jtempo,
+		ktp.tgl_bayar,
+		ktp.angs_ke,
+		ktp.angs_pokok,
+		ktp.saldo_pokok,
+		ktp.saldo_margin
+		FROM kis_trx_pembiayaan AS ktp
+		JOIN kis_pembiayaan AS kp ON kp.nomrek = ktp.nomrek
+		WHERE kp.noanggota = ?
+		ORDER BY ktp.tgl_jtempo ASC";
 
-		$param = array($nik);
+		$param = array($noanggota);
 
 		$query = $this->db->query($sql, $param);
 
-		return $query->row_array();
-	}
-
-	function update_password($table, $data, $param)
-	{
-		$this->db->update($table, $data, $param);
+		return $query->result_array();
 	}
 }

@@ -2,7 +2,6 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 use chriskacerguis\RestServer\RestController;
-use Firebase\JWT\JWT;
 
 class Information extends RestController
 {
@@ -13,185 +12,273 @@ class Information extends RestController
         date_default_timezone_set('Asia/Jakarta');
     }
 
-    function info_get()
+    function dashboard_post()
     {
         $headers = $this->input->request_headers();
-        $token = (isset($headers['Token'])) ? $headers['Token'] : false;
+        $token = (isset($headers['Token'])) ? $headers['Token'] : FALSE;
 
-        $nik = $this->input->get('nik');
+        $id_user = $this->input->post('id_user');
+        $tipe_user = $this->input->post('tipe_user');
+
+        $now = date('Y-m-d');
 
         if ($token) {
             $check_token = $this->model_information->check_token($token);
 
             if ($check_token['cnt'] > 0) {
-                $get = $this->model_information->get_info($nik);
+                $check_expired = $this->model_information->check_expired($now, $token);
 
-                $data = array();
+                if ($check_expired['expired'] > 7) {
+                    $res = [
+                        'status' => FALSE,
+                        'msg' => 'Token Expired',
+                        'data' => NULL
+                    ];
+                } else {
+                    if ($tipe_user == 1) {
+                        $get_cif = $this->model_information->get_cif($id_user);
+                        $get_deposito = $this->model_information->get_deposito($id_user);
+                        $get_financing = $this->model_information->get_financing($id_user);
 
-                foreach ($get as $gt) {
-                    if ($gt['gambar'] == NULL) {
-                        $foto_info = 'default_info.jpg';
+                        $data = array(
+                            'noanggota' => $get_cif['noanggota'],
+                            'jumlah' => NULL,
+                            'nama' => $get_cif['nama'],
+                            'majelis' => $get_cif['majelis'],
+                            'desa' => $get_cif['desa'],
+                            'simpok' => currency($get_cif['simpok']),
+                            'simwa' => currency($get_cif['simwa']),
+                            'sukarela' => currency($get_cif['sukarela']),
+                            'saldo_deposito' => currency($get_deposito['saldo_deposito']),
+                            'saldo_outstanding' => currency($get_financing['saldo_outstanding'])
+                        );
                     } else {
-                        $foto_info = $gt['gambar'];
+                        $get_sum_cif = $this->model_information->get_sum_cif();
+                        $get_sum_deposito = $this->model_information->get_sum_deposito();
+                        $get_sum_financing = $this->model_information->get_sum_financing();
+
+                        $data = array(
+                            'noanggota' => NULL,
+                            'jumlah' => $get_sum_cif['jumlah'],
+                            'simpok' => $get_sum_cif['simpok'],
+                            'simwa' => $get_sum_cif['simwa'],
+                            'sukarela' => $get_sum_cif['sukarela'],
+                            'saldo_deposito' => currency($get_sum_deposito['saldo_deposito']),
+                            'saldo_outstanding' => currency($get_sum_financing['saldo_outstanding'])
+                        );
                     }
 
-                    $path = 'https://simpres.baytulikhtiar.com/assets/foto_info/';
-
-                    $path_foto = $path . $foto_info;
-                    $type_foto = pathinfo($path_foto, PATHINFO_EXTENSION);
-                    $data_foto = @file_get_contents($path_foto);
-                    $base64_foto = 'data:image/' . $type_foto . ';base64,' . base64_encode($data_foto);
-
-                    $data[] = array(
-                        'id' => $gt['id'],
-                        'kategori' => $gt['kategori'],
-                        'judul' => $gt['judul'],
-                        'gambar' => $base64_foto,
-                        'pesan' => $gt['pesan'],
-                        'created_date' => $gt['created_date']
-                    );
+                    $res = [
+                        'status' => TRUE,
+                        'msg' => NULL,
+                        'data' => $data
+                    ];
                 }
-
-                $res = [
-                    'status' => true,
-                    'msg' => $data
-                ];
             } else {
                 $res = [
-                    'status' => false,
-                    'msg' => 'Token Invalid'
+                    'status' => FALSE,
+                    'msg' => 'Token Invalid',
+                    'data' => NULL
                 ];
             }
         } else {
             $res = [
-                'status' => false,
-                'msg' => 'No Token Provided'
+                'status' => FALSE,
+                'msg' => 'No Token Provided',
+                'data' => NULL
             ];
         }
 
         $this->response($res, 200);
     }
 
-    function info_detail_get()
+    function history_member_saving_post()
     {
         $headers = $this->input->request_headers();
-        $token = (isset($headers['Token'])) ? $headers['Token'] : false;
+        $token = (isset($headers['Token'])) ? $headers['Token'] : FALSE;
 
-        $id_info = $this->input->get('id_info');
+        $id_user = $this->input->post('id_user');
+        $jenis_trx = $this->input->post('jenis_trx');
+
+        $now = date('Y-m-d');
 
         if ($token) {
             $check_token = $this->model_information->check_token($token);
 
             if ($check_token['cnt'] > 0) {
-                $get = $this->model_information->get_info_detail($id_info);
+                $check_expired = $this->model_information->check_expired($now, $token);
 
-                if ($get['gambar'] == NULL) {
-                    $foto_info = 'default_info.jpg';
+                if ($check_expired['expired'] > 7) {
+                    $res = [
+                        'status' => FALSE,
+                        'msg' => 'Token Expired',
+                        'data' => NULL
+                    ];
                 } else {
-                    $foto_info = $get['gambar'];
+                    $get = $this->model_information->get_detail_saving($id_user, $jenis_trx);
+
+                    $data = array();
+
+                    foreach ($get as $gt) {
+                        if ($gt['dc_trx'] == 'C') {
+                            $setor = $gt['amount_trx'];
+                            $tarik = 0;
+                        } else {
+                            $setor = 0;
+                            $tarik = $gt['amount_trx'];
+                        }
+
+                        $data[] = array(
+                            'trx_date' => $gt['trx_date'],
+                            'saldo_awal' => currency($gt['saldo_awal']),
+                            'setor' => currency($setor),
+                            'tarik' => currency($tarik),
+                            'saldo' => currency($gt['saldo'])
+                        );
+                    }
+
+                    $res = [
+                        'status' => TRUE,
+                        'msg' => NULL,
+                        'data' => $data
+                    ];
                 }
-
-                $path = 'https://simpres.baytulikhtiar.com/assets/foto_info/';
-
-                $path_foto = $path . $foto_info;
-                $type_foto = pathinfo($path_foto, PATHINFO_EXTENSION);
-                $data_foto = @file_get_contents($path_foto);
-                $base64_foto = 'data:image/' . $type_foto . ';base64,' . base64_encode($data_foto);
-
-                $data = array(
-                    'id' => $get['id'],
-                    'kategori' => $get['kategori'],
-                    'judul' => $get['judul'],
-                    'gambar' => $base64_foto,
-                    'pesan' => $get['pesan'],
-                    'created_date' => $get['created_date']
-                );
-
-                $res = [
-                    'status' => true,
-                    'msg' => $data
-                ];
             } else {
                 $res = [
-                    'status' => false,
-                    'msg' => 'Token Invalid'
+                    'status' => FALSE,
+                    'msg' => 'Token Invalid',
+                    'data' => NULL
                 ];
             }
         } else {
             $res = [
-                'status' => false,
-                'msg' => 'No Token Provided'
+                'status' => FALSE,
+                'msg' => 'No Token Provided',
+                'data' => NULL
             ];
         }
 
         $this->response($res, 200);
     }
 
-    function forgot_post()
+    function history_member_deposito_post()
     {
-        $nik = $this->input->post('nik');
+        $headers = $this->input->request_headers();
+        $token = (isset($headers['Token'])) ? $headers['Token'] : FALSE;
 
-        $config = array();
+        $id_user = $this->input->post('id_user');
 
-        $check = $this->model_information->check_email($nik);
+        $now = date('Y-m-d');
 
-        if (isset($check['nik'])) {
-            if ($check['email'] == null) {
-                $new_email = 'saleh.ibrahim91@gmail.com';
-                $bcc = 'yudiripayansah@gmail.com';
-            } else {
-                $new_email = $check['email'];
-                $bcc = 'saleh.ibrahim91@gmail.com';
-            }
+        if ($token) {
+            $check_token = $this->model_information->check_token($token);
 
-            $salt = 'Semoga Allah melindungi sistem ini dari serangan orang-orang yang tidak bertanggung jawab. Aamiin Allahumma Aamiin';
+            if ($check_token['cnt'] > 0) {
+                $check_expired = $this->model_information->check_expired($now, $token);
 
-            $new_password = substr(md5(sha1(md5(sha1(date('Y-m-d H:i:s') . $salt)))), 0, 6);
+                if ($check_expired['expired'] > 7) {
+                    $res = [
+                        'status' => FALSE,
+                        'msg' => 'Token Expired',
+                        'data' => NULL
+                    ];
+                } else {
+                    $get = $this->model_information->get_detail_deposito($id_user);
 
-            $config['mailtype'] = 'html';
-            $config['protocol'] = 'smtp';
-            $config['smtp_host'] = 'ssl://smtp.gmail.com';
-            $config['smtp_user'] = 'infobaytulikhtiar@gmail.com';
-            $config['smtp_pass'] = 'admin123baik';
-            $config['smtp_port'] = '465';
-            $config['newline'] = "\r\n";
+                    $data = array();
 
-            $pesan = "<p>Assalamu'alaikum Wr.Wb,</p>";
-            $pesan .= '<p>Password Anda untuk akses App Karyawan telah kami ganti.<br />';
-            $pesan .= 'Anda bisa login menggunakan :<br />';
-            $pesan .= 'ID Anggota : ' . $check['username'] . '<br />';
-            $pesan .= 'Password : ' . $new_password . '</ p>';
-            $pesan .= '<p>Kami sangat sarankan agar Anda langsung mengubah Password setelah login berhasil. Terima kasih</p>';
-            $pesan .= "<p>Wassalamu'alaikum Wr.Wb</p>";
+                    foreach ($get as $gt) {
+                        $data[] = array(
+                            'notran' => $gt['notran'],
+                            'nomrek' => $gt['nomrek'],
+                            'nourut' => $gt['nourut'],
+                            'trx_date' => $gt['trx_date'],
+                            'saldo_awal' => currency($gt['saldo_awal']),
+                            'amount_trx' => currency($gt['amount_trx']),
+                            'saldo' => currency($gt['saldo'])
+                        );
+                    }
 
-            $this->email->initialize($config);
-            $this->email->from('info@bmbaytulikhtiar.com', 'Info KSPPS Baytul Ikhtiar');
-            $this->email->to($new_email);
-            $this->email->bcc($bcc);
-            $this->email->subject('Informasi Perubahan Password');
-            $this->email->message($pesan);
-
-            if ($this->email->send()) {
-                $data = array('password_temp' => md5($new_password));
-                $param = array('username' => $check['username']);
-
-                $this->model_information->update_password('app_user', $data, $param);
-
-                $res = [
-                    'status' => true,
-                    'msg' => 'Password berhasil diubah. Silakkan cek email Anda atau hubungi IT Support'
-                ];
+                    $res = [
+                        'status' => TRUE,
+                        'msg' => NULL,
+                        'data' => $data
+                    ];
+                }
             } else {
                 $res = [
-                    'status' => false,
-                    'msg' => 'Password Anda gagal dikirim via Email. Coba beberapa saat lagi',
-                    'sendEmail' => $this->email->print_debugger()
+                    'status' => FALSE,
+                    'msg' => 'Token Invalid',
+                    'data' => NULL
                 ];
             }
         } else {
             $res = [
-                'status' => false,
-                'msg' => 'Maaf! NIK Anda tidak ditemukan.'
+                'status' => FALSE,
+                'msg' => 'No Token Provided',
+                'data' => NULL
+            ];
+        }
+
+        $this->response($res, 200);
+    }
+
+    function history_member_financing_post()
+    {
+        $headers = $this->input->request_headers();
+        $token = (isset($headers['Token'])) ? $headers['Token'] : FALSE;
+
+        $id_user = $this->input->post('id_user');
+
+        $now = date('Y-m-d');
+
+        if ($token) {
+            $check_token = $this->model_information->check_token($token);
+
+            if ($check_token['cnt'] > 0) {
+                $check_expired = $this->model_information->check_expired($now, $token);
+
+                if ($check_expired['expired'] > 7) {
+                    $res = [
+                        'status' => FALSE,
+                        'msg' => 'Token Expired',
+                        'data' => NULL
+                    ];
+                } else {
+                    $get = $this->model_information->get_detail_financing($id_user);
+
+                    $data = array();
+
+                    foreach ($get as $gt) {
+                        $data[] = array(
+                            'notran' => $gt['notran'],
+                            'tgl_jtempo' => $gt['tgl_jtempo'],
+                            'tgl_bayar' => $gt['tgl_bayar'],
+                            'angs_ke' => $gt['angs_ke'],
+                            'angs_pokok' => currency($gt['angs_pokok']),
+                            'saldo_pokok' => currency($gt['saldo_pokok']),
+                            'saldo_margin' => currency($gt['saldo_margin'])
+                        );
+                    }
+
+                    $res = [
+                        'status' => TRUE,
+                        'msg' => NULL,
+                        'data' => $data
+                    ];
+                }
+            } else {
+                $res = [
+                    'status' => FALSE,
+                    'msg' => 'Token Invalid',
+                    'data' => NULL
+                ];
+            }
+        } else {
+            $res = [
+                'status' => FALSE,
+                'msg' => 'No Token Provided',
+                'data' => NULL
             ];
         }
 
