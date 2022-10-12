@@ -144,4 +144,13 @@ class Model_information extends CI_Model
 
 		return $query->result_array();
 	}
+
+	function get_all_member()
+	{
+		$sql = "SELECT * FROM kis_anggota WHERE status = '1' ORDER BY majelis, nama";
+
+		$query = $this->db->query($sql);
+
+		return $query->result_array();
+	}
 }

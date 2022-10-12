@@ -98,7 +98,14 @@ class Information extends RestController
         $token = (isset($headers['Token'])) ? $headers['Token'] : FALSE;
 
         $id_user = $this->input->post('id_user');
+        $noanggota = $this->input->post('noanggota');
         $jenis_trx = $this->input->post('jenis_trx');
+
+        if ($id_user) {
+            $cif_no = $id_user;
+        } else {
+            $cif_no = $noanggota;
+        }
 
         $now = date('Y-m-d');
 
@@ -115,7 +122,7 @@ class Information extends RestController
                         'data' => NULL
                     ];
                 } else {
-                    $get = $this->model_information->get_detail_saving($id_user, $jenis_trx);
+                    $get = $this->model_information->get_detail_saving($cif_no, $jenis_trx);
 
                     $data = array();
 
@@ -167,6 +174,13 @@ class Information extends RestController
         $token = (isset($headers['Token'])) ? $headers['Token'] : FALSE;
 
         $id_user = $this->input->post('id_user');
+        $noanggota = $this->input->post('noanggota');
+
+        if ($id_user) {
+            $cif_no = $id_user;
+        } else {
+            $cif_no = $noanggota;
+        }
 
         $now = date('Y-m-d');
 
@@ -183,7 +197,7 @@ class Information extends RestController
                         'data' => NULL
                     ];
                 } else {
-                    $get = $this->model_information->get_detail_deposito($id_user);
+                    $get = $this->model_information->get_detail_deposito($cif_no);
 
                     $data = array();
 
@@ -229,6 +243,13 @@ class Information extends RestController
         $token = (isset($headers['Token'])) ? $headers['Token'] : FALSE;
 
         $id_user = $this->input->post('id_user');
+        $noanggota = $this->input->post('noanggota');
+
+        if ($id_user) {
+            $cif_no = $id_user;
+        } else {
+            $cif_no = $noanggota;
+        }
 
         $now = date('Y-m-d');
 
@@ -245,7 +266,7 @@ class Information extends RestController
                         'data' => NULL
                     ];
                 } else {
-                    $get = $this->model_information->get_detail_financing($id_user);
+                    $get = $this->model_information->get_detail_financing($cif_no);
 
                     $data = array();
 
@@ -260,6 +281,121 @@ class Information extends RestController
                             'saldo_margin' => currency($gt['saldo_margin'])
                         );
                     }
+
+                    $res = [
+                        'status' => TRUE,
+                        'msg' => NULL,
+                        'data' => $data
+                    ];
+                }
+            } else {
+                $res = [
+                    'status' => FALSE,
+                    'msg' => 'Token Invalid',
+                    'data' => NULL
+                ];
+            }
+        } else {
+            $res = [
+                'status' => FALSE,
+                'msg' => 'No Token Provided',
+                'data' => NULL
+            ];
+        }
+
+        $this->response($res, 200);
+    }
+
+    function member_get()
+    {
+        $headers = $this->input->request_headers();
+        $token = (isset($headers['Token'])) ? $headers['Token'] : FALSE;
+
+        $now = date('Y-m-d');
+
+        if ($token) {
+            $check_token = $this->model_information->check_token($token);
+
+            if ($check_token['cnt'] > 0) {
+                $check_expired = $this->model_information->check_expired($now, $token);
+
+                if ($check_expired['expired'] > 7) {
+                    $res = [
+                        'status' => FALSE,
+                        'msg' => 'Token Expired',
+                        'data' => NULL
+                    ];
+                } else {
+                    $get = $this->model_information->get_all_member();
+
+                    $data = array();
+
+                    foreach ($get as $gt) {
+                        $data[] = array(
+                            'noanggota' => $gt['noanggota'],
+                            'nama' => $gt['nama'],
+                            'majelis' => $gt['majelis'],
+                            'desa' => $gt['desa']
+                        );
+                    }
+
+                    $res = [
+                        'status' => TRUE,
+                        'msg' => NULL,
+                        'data' => $data
+                    ];
+                }
+            } else {
+                $res = [
+                    'status' => FALSE,
+                    'msg' => 'Token Invalid',
+                    'data' => NULL
+                ];
+            }
+        } else {
+            $res = [
+                'status' => FALSE,
+                'msg' => 'No Token Provided',
+                'data' => NULL
+            ];
+        }
+
+        $this->response($res, 200);
+    }
+
+    function saldo_member_post()
+    {
+        $headers = $this->input->request_headers();
+        $token = (isset($headers['Token'])) ? $headers['Token'] : FALSE;
+
+        $noanggota = $this->input->post('noanggota');
+
+        $now = date('Y-m-d');
+
+        if ($token) {
+            $check_token = $this->model_information->check_token($token);
+
+            if ($check_token['cnt'] > 0) {
+                $check_expired = $this->model_information->check_expired($now, $token);
+
+                if ($check_expired['expired'] > 7) {
+                    $res = [
+                        'status' => FALSE,
+                        'msg' => 'Token Expired',
+                        'data' => NULL
+                    ];
+                } else {
+                    $get_cif = $this->model_information->get_cif($noanggota);
+                    $get_deposito = $this->model_information->get_deposito($noanggota);
+                    $get_financing = $this->model_information->get_financing($noanggota);
+
+                    $data = array(
+                        'simpok' => currency($get_cif['simpok']),
+                        'simwa' => currency($get_cif['simwa']),
+                        'sukarela' => currency($get_cif['sukarela']),
+                        'saldo_deposito' => currency($get_deposito['saldo_deposito']),
+                        'saldo_outstanding' => currency($get_financing['saldo_outstanding'])
+                    );
 
                     $res = [
                         'status' => TRUE,
