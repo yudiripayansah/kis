@@ -3,7 +3,7 @@
     <div class="pg-header pt-5 pb-3">
       <img :src="app.koperasi_logo" alt="">
       <!-- <h1>Mobile {{app.koperasi_name}}</h1> -->
-      <h6>Saldo</h6>
+      <h6 class="text-capitalize">Saldo {{ $route.params.type }}</h6>
       <div class="pg-header-nav-btn">
         <router-link to="/dashboard">
           <i class="fas fa-arrow-left"></i>
@@ -27,7 +27,7 @@
       <div class="pg-saldo py-3 d-flex flex-column align-items-center">
         <h4 class="mb-4">Histori</h4>
         <div class="pg-saldo-items w-100">
-          <div class="pg-saldo-item mb-3">
+          <div class="mb-3 rounded p-3 bg-blue-1 text-dg-3 border-3 border border-blue-3">
             <h6>10 September 2022</h6>
             <div class="d-flex justify-content-between align-items-end">
               <label>Saldo Awal</label>

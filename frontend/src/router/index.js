@@ -37,14 +37,6 @@ const routes = [
     meta: {
       title: 'Login - KIS',
     }
-  },
-  {
-    path: '/forgot-password',
-    name: 'ForgotPassword',
-    component: () => import(/* webpackChunkName: "forgot-password" */ '../pages/ForgotPassword.vue'),
-    meta: {
-      title: 'Forgot Password - KIS',
-    }
   }
 ]
 

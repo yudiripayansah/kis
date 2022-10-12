@@ -15,9 +15,9 @@
         <div class="d-flex">
           <img src="../assets/images/profile.png" alt="">
           <div class="pg-profile-box-text">
-            <h3>Hi, {{profile.name}}</h3>
-            <h2>Rembug</h2>
-            <h6>Desa</h6>
+            <h2>Hi, {{profile.name}}</h2>
+            <h3>1234567890</h3>
+            <h3>Rembug <small>(Desa)</small></h3>
           </div>
         </div>
         <div @click="doLogout()" class="d-flex justify-content-center align-items-center pg-btn-logout">
