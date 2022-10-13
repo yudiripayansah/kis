@@ -15,7 +15,7 @@ class Information extends RestController
     function dashboard_post()
     {
         $headers = $this->input->request_headers();
-        $token = (isset($headers['Token'])) ? $headers['Token'] : FALSE;
+        $token = (isset($headers['token'])) ? $headers['token'] : FALSE;
 
         $id_user = $this->input->post('id_user');
         $tipe_user = $this->input->post('tipe_user');
@@ -60,9 +60,9 @@ class Information extends RestController
                         $data = array(
                             'noanggota' => NULL,
                             'jumlah' => $get_sum_cif['jumlah'],
-                            'simpok' => $get_sum_cif['simpok'],
-                            'simwa' => $get_sum_cif['simwa'],
-                            'sukarela' => $get_sum_cif['sukarela'],
+                            'simpok' => currency($get_sum_cif['simpok']),
+                            'simwa' => currency($get_sum_cif['simwa']),
+                            'sukarela' => currency($get_sum_cif['sukarela']),
                             'saldo_deposito' => currency($get_sum_deposito['saldo_deposito']),
                             'saldo_outstanding' => currency($get_sum_financing['saldo_outstanding'])
                         );
@@ -95,7 +95,7 @@ class Information extends RestController
     function history_member_saving_post()
     {
         $headers = $this->input->request_headers();
-        $token = (isset($headers['Token'])) ? $headers['Token'] : FALSE;
+        $token = (isset($headers['token'])) ? $headers['token'] : FALSE;
 
         $id_user = $this->input->post('id_user');
         $noanggota = $this->input->post('noanggota');
@@ -171,7 +171,7 @@ class Information extends RestController
     function history_member_deposito_post()
     {
         $headers = $this->input->request_headers();
-        $token = (isset($headers['Token'])) ? $headers['Token'] : FALSE;
+        $token = (isset($headers['token'])) ? $headers['token'] : FALSE;
 
         $id_user = $this->input->post('id_user');
         $noanggota = $this->input->post('noanggota');
@@ -240,7 +240,7 @@ class Information extends RestController
     function history_member_financing_post()
     {
         $headers = $this->input->request_headers();
-        $token = (isset($headers['Token'])) ? $headers['Token'] : FALSE;
+        $token = (isset($headers['token'])) ? $headers['token'] : FALSE;
 
         $id_user = $this->input->post('id_user');
         $noanggota = $this->input->post('noanggota');
@@ -306,10 +306,10 @@ class Information extends RestController
         $this->response($res, 200);
     }
 
-    function member_get()
+    function rembug_get()
     {
         $headers = $this->input->request_headers();
-        $token = (isset($headers['Token'])) ? $headers['Token'] : FALSE;
+        $token = (isset($headers['token'])) ? $headers['token'] : FALSE;
 
         $now = date('Y-m-d');
 
@@ -326,7 +326,61 @@ class Information extends RestController
                         'data' => NULL
                     ];
                 } else {
-                    $get = $this->model_information->get_all_member();
+                    $get = $this->model_information->get_all_rembug();
+
+                    $data = array();
+
+                    foreach ($get as $gt) {
+                        $data[] = array('majelis' => $gt['majelis']);
+                    }
+
+                    $res = [
+                        'status' => TRUE,
+                        'msg' => NULL,
+                        'data' => $data
+                    ];
+                }
+            } else {
+                $res = [
+                    'status' => FALSE,
+                    'msg' => 'Token Invalid',
+                    'data' => NULL
+                ];
+            }
+        } else {
+            $res = [
+                'status' => FALSE,
+                'msg' => 'No Token Provided',
+                'data' => NULL
+            ];
+        }
+
+        $this->response($res, 200);
+    }
+
+    function member_post()
+    {
+        $headers = $this->input->request_headers();
+        $token = (isset($headers['token'])) ? $headers['token'] : FALSE;
+
+        $majelis = $this->input->post('majelis');
+
+        $now = date('Y-m-d');
+
+        if ($token) {
+            $check_token = $this->model_information->check_token($token);
+
+            if ($check_token['cnt'] > 0) {
+                $check_expired = $this->model_information->check_expired($now, $token);
+
+                if ($check_expired['expired'] > 7) {
+                    $res = [
+                        'status' => FALSE,
+                        'msg' => 'Token Expired',
+                        'data' => NULL
+                    ];
+                } else {
+                    $get = $this->model_information->get_all_member($majelis);
 
                     $data = array();
 
@@ -366,7 +420,7 @@ class Information extends RestController
     function saldo_member_post()
     {
         $headers = $this->input->request_headers();
-        $token = (isset($headers['Token'])) ? $headers['Token'] : FALSE;
+        $token = (isset($headers['token'])) ? $headers['token'] : FALSE;
 
         $noanggota = $this->input->post('noanggota');
 
