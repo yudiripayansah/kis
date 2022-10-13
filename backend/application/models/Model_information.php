@@ -145,11 +145,22 @@ class Model_information extends CI_Model
 		return $query->result_array();
 	}
 
-	function get_all_member()
+	function get_all_rembug()
 	{
-		$sql = "SELECT * FROM kis_anggota WHERE status = '1' ORDER BY majelis, nama";
+		$sql = "SELECT majelis FROM kis_anggota WHERE status = '1' GROUP BY 1 ORDER BY majelis";
 
 		$query = $this->db->query($sql);
+
+		return $query->result_array();
+	}
+
+	function get_all_member($majelis)
+	{
+		$sql = "SELECT * FROM kis_anggota WHERE status = '1' AND majelis = ? ORDER BY majelis, nama";
+
+		$param = array($majelis);
+
+		$query = $this->db->query($sql, $param);
 
 		return $query->result_array();
 	}
