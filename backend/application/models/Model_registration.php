@@ -3,25 +3,61 @@
 class Model_registration extends CI_Model
 {
 
-    function check_token($token)
+    function get_user($sidx, $sord, $limit_rows, $start, $search)
     {
-        $sql = "SELECT COUNT(*) AS cnt FROM tpl_user WHERE token = ?";
+        $param = array();
 
-        $param = array($token);
+        $sql = "SELECT * FROM kis_user WHERE tipe_user = 2 AND id_user LIKE ? ";
+
+        $param[] = '%' . $search . '%';
+
+        if ($sidx != '') {
+            $sql .= 'ORDER BY ' . $sidx . ' ' . $sord . ' ';
+        }
+
+        if ($limit_rows != '' and $start != '') {
+            $sql .= 'LIMIT ' . $limit_rows . ' OFFSET ' . $start;
+        }
+
+        $query = $this->db->query($sql, $param);
+
+        return $query->result_array();
+    }
+
+    function check_id_user($id_user)
+    {
+        $sql = "SELECT COUNT(*) AS jumlah FROM kis_user WHERE id_user = ?";
+
+        $param = array($id_user);
 
         $query = $this->db->query($sql, $param);
 
         return $query->row_array();
     }
 
-    function check_expired($now, $token)
+    function get_user_by_id($id_user)
     {
-        $sql = "SELECT (?::DATE - last_login::DATE) AS expired FROM tpl_user WHERE token = ?";
+        $sql = "SELECT * FROM kis_user WHERE id_user = ?";
 
-        $param = array($now, $token);
+        $param = array($id_user);
 
         $query = $this->db->query($sql, $param);
 
         return $query->row_array();
+    }
+
+    function insert($table, $data)
+    {
+        $this->db->insert($table, $data);
+    }
+
+    function update($table, $data, $param)
+    {
+        $this->db->update($table, $data, $param);
+    }
+
+    function delete($table, $param)
+    {
+        $this->db->delete($table, $param);
     }
 }
