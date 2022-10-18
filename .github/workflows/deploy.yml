@@ -16,6 +16,7 @@ jobs:
           cd /repository/kis
           git pull
           cd frontend
+          yarn install
           yarn build
           rm -r -f /var/www/kis.kopikoding.com/public_html/*
           cp -R /repository/kis/frontend/dist/* /var/www/kis.kopikoding.com/public_html/
