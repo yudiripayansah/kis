@@ -29,4 +29,5 @@ jobs:
           mkdir /var/www/kis.kopikoding.com/public_html/api/
           rm -r -f /var/www/kis.kopikoding.com/public_html/api/*
           cp -R /repository/kis/backend/* /var/www/kis.kopikoding.com/public_html/api/
+          cp -R /repository/kis/backend/config/database.php /var/www/kis.kopikoding.com/public_html/api/application/config/database.php
           echo "sukses deploy backend"
