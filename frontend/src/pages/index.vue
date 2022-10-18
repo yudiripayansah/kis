@@ -1,17 +1,10 @@
 <template>
   <div class="w-100 d-flex">
     <router-view></router-view>
-    <!-- <transition name="slide-fade">
-    <TabMenu v-show="$route.name != 'Dashboard'"/>
-    </transition> -->
   </div>
 </template>
 <script>
-import TabMenu from '../components/TabMenu'
 export default {
-  components: {
-    TabMenu
-  },
   data(){
     return {
       transitionName : null

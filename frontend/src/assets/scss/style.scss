@@ -296,26 +296,44 @@ a {
     }
     &.color-1 {
       div {
-        background: #F3E7F0;
+        background: #F3E7F0 !important;
         color: #BB7F87;
       }
     }
     &.color-2 {
       div {
-        background: #FFF1EF;
+        background: #FFF1EF !important;
         color: #F19895;
       }
     }
     &.color-3 {
       div {
-        background: #FFF5E5;
+        background: #FFF5E5 !important;
         color: #BB7F87;
       }
     }
     &.color-4 {
       div {
-        background: #e5ffe9;
+        background: #e5ffe9 !important;
         color: #7fbb86;
+      }
+    }
+  }
+  &.small {
+    flex-direction: row;
+    a {
+      width: unset;
+      max-width: 100%;
+      min-width: 48%;
+      div {
+        width: 100%;
+        font-size: 14px;
+        padding: 15px;
+        height: unset;
+        background: #a8def0;
+      }
+      span {
+        margin-top: unset;
       }
     }
   }

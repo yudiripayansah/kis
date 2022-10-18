@@ -21,13 +21,21 @@ const routes = [
         }
       },
       {
-        path: 'saldo/:type',
+        path: 'saldo/:type/:noanggota?',
         name: 'Saldo',
         component: () => import(/* webpackChunkName: "Saldo" */ '../pages/Saldo.vue'),
         meta: {
           title: 'Saldo - KIS',
         }
-      }
+      },
+      {
+        path: 'anggota',
+        name: 'Anggota',
+        component: () => import(/* webpackChunkName: "anggota" */ '../pages/Anggota.vue'),
+        meta: {
+          title: 'Anggota - KIS',
+        }
+      },
     ]
   },
   {

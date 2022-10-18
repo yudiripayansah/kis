@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    user: localStorage.getItem('baikAnggota') != null ? JSON.parse(localStorage.getItem('baikAnggota')) : [],
+    user: localStorage.getItem('kisMobileApp') != null ? JSON.parse(localStorage.getItem('kisMobileApp')) : [],
   },
   getters: {
     user: state => state.user,
@@ -13,11 +13,11 @@ export default new Vuex.Store({
   mutations: {
     setUser(state,payload){
       state.user = payload
-      localStorage.setItem('baikAnggota', JSON.stringify(state.user))
+      localStorage.setItem('kisMobileApp', JSON.stringify(state.user))
     },
     removeUser(state){
       state.user = []
-      localStorage.removeItem('baikAnggota')
+      localStorage.removeItem('kisMobileApp')
     }
   },
   actions: {
