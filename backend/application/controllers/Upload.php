@@ -201,6 +201,8 @@ class Upload extends CI_Controller
 
     function transaction_financing()
     {
+        ini_set('memory_limit', '1G');
+
         $transaction_financing = file_get_contents('php://input');
 
         $decode = json_decode($transaction_financing);
