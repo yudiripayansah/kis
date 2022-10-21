@@ -99,7 +99,12 @@ class Information extends RestController
 
         $id_user = $this->input->post('id_user');
         $noanggota = $this->input->post('noanggota');
+        $from_date = $this->input->post('from_date');
+        $thru_date = $this->input->post('thru_date');
         $jenis_trx = $this->input->post('jenis_trx');
+
+        $from_date = date('Y-m-d', strtotime($from_date));
+        $thru_date = date('Y-m-d', strtotime($thru_date));
 
         if ($id_user) {
             $cif_no = $id_user;
@@ -122,7 +127,7 @@ class Information extends RestController
                         'data' => NULL
                     ];
                 } else {
-                    $get = $this->model_information->get_detail_saving($cif_no, $jenis_trx);
+                    $get = $this->model_information->get_detail_saving($cif_no, $jenis_trx, $from_date, $thru_date);
 
                     $data = array();
 
@@ -175,6 +180,11 @@ class Information extends RestController
 
         $id_user = $this->input->post('id_user');
         $noanggota = $this->input->post('noanggota');
+        $from_date = $this->input->post('from_date');
+        $thru_date = $this->input->post('thru_date');
+
+        $from_date = date('Y-m-d', strtotime($from_date));
+        $thru_date = date('Y-m-d', strtotime($thru_date));
 
         if ($id_user) {
             $cif_no = $id_user;
@@ -197,7 +207,7 @@ class Information extends RestController
                         'data' => NULL
                     ];
                 } else {
-                    $get = $this->model_information->get_detail_deposito($cif_no);
+                    $get = $this->model_information->get_detail_deposito($cif_no, $from_date, $thru_date);
 
                     $data = array();
 
@@ -271,10 +281,16 @@ class Information extends RestController
                     $data = array();
 
                     foreach ($get as $gt) {
+                        if ($gt['tgl_bayar'] == NULL) {
+                            $tgl_bayar = 'Belum Dibayar';
+                        } else {
+                            $tgl_bayar = $gt['tgl_bayar'];
+                        }
+
                         $data[] = array(
                             'notran' => $gt['notran'],
                             'tgl_jtempo' => $gt['tgl_jtempo'],
-                            'tgl_bayar' => $gt['tgl_bayar'],
+                            'tgl_bayar' => $tgl_bayar,
                             'angs_ke' => $gt['angs_ke'],
                             'angs_pokok' => currency($gt['angs_pokok']),
                             'saldo_pokok' => currency($gt['saldo_pokok']),
