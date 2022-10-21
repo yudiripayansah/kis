@@ -90,18 +90,18 @@ class Model_information extends CI_Model
 		return $query->row_array();
 	}
 
-	function get_detail_saving($noanggota, $jenis_trx)
+	function get_detail_saving($noanggota, $jenis_trx, $from_date, $thru_date)
 	{
-		$sql = "SELECT * FROM kis_trx_simpanan WHERE noanggota = ? AND jenis_trx = ? ORDER BY trx_date ASC";
+		$sql = "SELECT * FROM kis_trx_simpanan WHERE noanggota = ? AND jenis_trx = ? AND trx_date BETWEEN ? AND ? ORDER BY trx_date ASC";
 
-		$param = array($noanggota, $jenis_trx);
+		$param = array($noanggota, $jenis_trx, $from_date, $thru_date);
 
 		$query = $this->db->query($sql, $param);
 
 		return $query->result_array();
 	}
 
-	function get_detail_deposito($noanggota)
+	function get_detail_deposito($noanggota, $from_date, $thru_date)
 	{
 		$sql = "SELECT
 		ktd.notran,
@@ -113,10 +113,10 @@ class Model_information extends CI_Model
 		ktd.saldo
 		FROM kis_trx_deposito AS ktd
 		JOIN kis_deposito AS kd ON kd.nomrek = ktd.nomrek
-		WHERE kd.noanggota = ?
+		WHERE kd.noanggota = ? AND trx_date BETWEEN ? AND ?
 		ORDER BY ktd.trx_date ASC";
 
-		$param = array($noanggota);
+		$param = array($noanggota, $from_date, $thru_date);
 
 		$query = $this->db->query($sql, $param);
 
