@@ -49,6 +49,9 @@ class Information extends RestController
                             'simpok' => currency($get_cif['simpok']),
                             'simwa' => currency($get_cif['simwa']),
                             'sukarela' => currency($get_cif['sukarela']),
+                            'umroh' => currency($get_cif['umroh']),
+                            'qurban' => currency($get_cif['qurban']),
+                            'pendidikan' => currency($get_cif['pendidikan']),
                             'saldo_deposito' => currency($get_deposito['saldo_deposito']),
                             'saldo_outstanding' => currency($get_financing['saldo_outstanding'])
                         );
@@ -63,6 +66,9 @@ class Information extends RestController
                             'simpok' => currency($get_sum_cif['simpok']),
                             'simwa' => currency($get_sum_cif['simwa']),
                             'sukarela' => currency($get_sum_cif['sukarela']),
+                            'umroh' => currency($get_sum_cif['umroh']),
+                            'qurban' => currency($get_sum_cif['qurban']),
+                            'pendidikan' => currency($get_sum_cif['pendidikan']),
                             'saldo_deposito' => currency($get_sum_deposito['saldo_deposito']),
                             'saldo_outstanding' => currency($get_sum_financing['saldo_outstanding'])
                         );
@@ -247,7 +253,7 @@ class Information extends RestController
         $this->response($res, 200);
     }
 
-    function history_member_financing_post()
+    function financing_post()
     {
         $headers = $this->input->request_headers();
         $token = (isset($headers['token'])) ? $headers['token'] : FALSE;
@@ -276,7 +282,78 @@ class Information extends RestController
                         'data' => NULL
                     ];
                 } else {
-                    $get = $this->model_information->get_detail_financing($cif_no);
+                    $get = $this->model_information->get_account_financing($cif_no);
+
+                    $data = array();
+
+                    foreach ($get as $gt) {
+                        if ($gt['status'] == 0) {
+                            $status = 'Baru Regis';
+                        } else if ($gt['status'] == 1) {
+                            $status = 'Aktif';
+                        } else {
+                            $status = 'Lunas';
+                        }
+
+                        $data[] = array(
+                            'nomrek' => $gt['nomrek'],
+                            'noanggota' => $gt['noanggota'],
+                            'produk' => $gt['produk'],
+                            'tgl_droping' => $gt['tgl_droping'],
+                            'pokok' => currency($gt['pokok']),
+                            'margin' => currency($gt['margin']),
+                            'jk_waktu' => $gt['jk_waktu'],
+                            'status' => $status
+                        );
+                    }
+
+                    $res = [
+                        'status' => TRUE,
+                        'msg' => NULL,
+                        'data' => $data
+                    ];
+                }
+            } else {
+                $res = [
+                    'status' => FALSE,
+                    'msg' => 'Token Invalid',
+                    'data' => NULL
+                ];
+            }
+        } else {
+            $res = [
+                'status' => FALSE,
+                'msg' => 'No Token Provided',
+                'data' => NULL
+            ];
+        }
+
+        $this->response($res, 200);
+    }
+
+    function history_member_financing_post()
+    {
+        $headers = $this->input->request_headers();
+        $token = (isset($headers['token'])) ? $headers['token'] : FALSE;
+
+        $nomrek = $this->input->post('nomrek');
+
+        $now = date('Y-m-d');
+
+        if ($token) {
+            $check_token = $this->model_information->check_token($token);
+
+            if ($check_token['cnt'] > 0) {
+                $check_expired = $this->model_information->check_expired($now, $token);
+
+                if ($check_expired['expired'] > 7) {
+                    $res = [
+                        'status' => FALSE,
+                        'msg' => 'Token Expired',
+                        'data' => NULL
+                    ];
+                } else {
+                    $get = $this->model_information->get_detail_financing($nomrek);
 
                     $data = array();
 
@@ -463,6 +540,9 @@ class Information extends RestController
                         'simpok' => currency($get_cif['simpok']),
                         'simwa' => currency($get_cif['simwa']),
                         'sukarela' => currency($get_cif['sukarela']),
+                        'umroh' => currency($get_cif['umroh']),
+                        'qurban' => currency($get_cif['qurban']),
+                        'pendidikan' => currency($get_cif['pendidikan']),
                         'saldo_deposito' => currency($get_deposito['saldo_deposito']),
                         'saldo_outstanding' => currency($get_financing['saldo_outstanding'])
                     );
