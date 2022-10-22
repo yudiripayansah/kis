@@ -64,7 +64,10 @@ class Model_information extends CI_Model
 		COUNT(*) AS jumlah,
 		COALESCE(SUM(simpok),0) AS simpok,
 		COALESCE(SUM(simwa),0) AS simwa,
-		COALESCE(SUM(sukarela),0) AS sukarela
+		COALESCE(SUM(sukarela),0) AS sukarela,
+		COALESCE(SUM(umroh),0) AS umroh,
+		COALESCE(SUM(qurban),0) AS qurban,
+		COALESCE(SUM(pendidikan),0) AS pendidikan
 		FROM kis_anggota";
 
 		$query = $this->db->query($sql);
@@ -123,7 +126,18 @@ class Model_information extends CI_Model
 		return $query->result_array();
 	}
 
-	function get_detail_financing($noanggota)
+	function get_account_financing($noanggota)
+	{
+		$sql = "SELECT * FROM kis_pembiayaan WHERE noanggota = ?";
+
+		$param = array($noanggota);
+
+		$query = $this->db->query($sql, $param);
+
+		return $query->result_array();
+	}
+
+	function get_detail_financing($nomrek)
 	{
 		$sql = "SELECT
 		ktp.notran,
@@ -135,10 +149,10 @@ class Model_information extends CI_Model
 		ktp.saldo_margin
 		FROM kis_trx_pembiayaan AS ktp
 		JOIN kis_pembiayaan AS kp ON kp.nomrek = ktp.nomrek
-		WHERE kp.noanggota = ?
+		WHERE kp.nomrek = ?
 		ORDER BY ktp.tgl_jtempo ASC";
 
-		$param = array($noanggota);
+		$param = array($nomrek);
 
 		$query = $this->db->query($sql, $param);
 

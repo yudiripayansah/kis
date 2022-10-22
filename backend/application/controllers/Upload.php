@@ -29,7 +29,10 @@ class Upload extends CI_Controller
                 'status' => $decode[$i]->status,
                 'simpok' => $decode[$i]->simpok,
                 'simwa' => $decode[$i]->simwa,
-                'sukarela' => $decode[$i]->sukarela
+                'sukarela' => $decode[$i]->sukarela,
+                'umroh' => $decode[$i]->umroh,
+                'qurban' => $decode[$i]->qurban,
+                'pendidikan' => $decode[$i]->pendidikan
             );
         }
 
@@ -156,6 +159,8 @@ class Upload extends CI_Controller
 
     function transaction_deposito()
     {
+        ini_set('memory_limit', '1G');
+
         $transaction_deposito = file_get_contents('php://input');
 
         $decode = json_decode($transaction_deposito);
@@ -251,6 +256,8 @@ class Upload extends CI_Controller
 
     function transaction_saving()
     {
+        ini_set('memory_limit', '1G');
+
         $transaction_saving = file_get_contents('php://input');
 
         $decode = json_decode($transaction_saving);
