@@ -151,7 +151,8 @@ class Information extends RestController
                             'saldo_awal' => currency($gt['saldo_awal']),
                             'setor' => currency($setor),
                             'tarik' => currency($tarik),
-                            'saldo' => currency($gt['saldo'])
+                            'saldo' => currency($gt['saldo']),
+                            'keterangan' => $gt['keterangan']
                         );
                     }
 
