@@ -95,7 +95,7 @@ class Model_information extends CI_Model
 
 	function get_detail_saving($noanggota, $jenis_trx, $from_date, $thru_date)
 	{
-		$sql = "SELECT * FROM kis_trx_simpanan WHERE noanggota = ? AND jenis_trx = ? AND trx_date BETWEEN ? AND ? ORDER BY trx_date ASC";
+		$sql = "SELECT * FROM kis_trx_simpanan WHERE noanggota = ? AND jenis_trx = ? AND trx_date BETWEEN ? AND ? ORDER BY trx_date,notran ASC";
 
 		$param = array($noanggota, $jenis_trx, $from_date, $thru_date);
 
