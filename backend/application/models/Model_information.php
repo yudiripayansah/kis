@@ -145,6 +145,7 @@ class Model_information extends CI_Model
 		ktp.tgl_bayar,
 		ktp.angs_ke,
 		ktp.angs_pokok,
+		ktp.angs_margin,
 		ktp.saldo_pokok,
 		ktp.saldo_margin
 		FROM kis_trx_pembiayaan AS ktp

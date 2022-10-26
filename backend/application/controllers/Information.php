@@ -371,6 +371,7 @@ class Information extends RestController
                             'tgl_bayar' => $tgl_bayar,
                             'angs_ke' => $gt['angs_ke'],
                             'angs_pokok' => currency($gt['angs_pokok']),
+                            'angs_margin' => currency($gt['angs_margin']),
                             'saldo_pokok' => currency($gt['saldo_pokok']),
                             'saldo_margin' => currency($gt['saldo_margin'])
                         );
