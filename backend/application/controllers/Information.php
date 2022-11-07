@@ -98,6 +98,67 @@ class Information extends RestController
         $this->response($res, 200);
     }
 
+    function read_forgot_post()
+    {
+        $page = $this->input->post('page');
+        $limit_rows = $this->input->post('limit_rows');
+        $sidx = $this->input->post('sidx');
+        $sord = $this->input->post('sord');
+        $totalrows = $this->input->post('totalrows');
+        $search_user = $this->input->post('search_user');
+
+        if ($totalrows) {
+            $limit_rows = $totalrows;
+        }
+
+        $sum = $this->model_information->get_forgot('', '', '', '', $search_user);
+
+        $count = count($sum);
+
+        if ($count > 0) {
+            $total_pages = ceil($count / $limit_rows);
+        } else {
+            $total_pages = 0;
+        }
+
+        if ($page > $total_pages) {
+            $page = $total_pages;
+        }
+
+        $start = ($limit_rows * $page) - $limit_rows;
+
+        if ($start < 0) {
+            $start = 0;
+        }
+
+        $get = $this->model_information->get_forgot($sidx, $sord, $limit_rows, $start, $search_user);
+
+        $loop = array();
+
+        foreach ($get as $gt) {
+            $loop[] = array(
+                'id' => $gt['id'],
+                'id_user' => $gt['id_user'],
+                'password_temp' => $gt['password_temp']
+            );
+        }
+
+        $data = array(
+            'page' => $page,
+            'total_pages' => $total_pages,
+            'count' => $count,
+            'jqgrid' => $loop
+        );
+
+        $res = [
+            'status' => TRUE,
+            'msg' => NULL,
+            'data' => $data
+        ];
+
+        $this->response($res, 200);
+    }
+
     function history_member_saving_post()
     {
         $headers = $this->input->request_headers();

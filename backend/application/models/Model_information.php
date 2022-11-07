@@ -2,7 +2,6 @@
 
 class Model_information extends CI_Model
 {
-
 	function check_token($token)
 	{
 		$sql = "SELECT COUNT(*) AS cnt FROM kis_user WHERE token = ?";
@@ -23,6 +22,27 @@ class Model_information extends CI_Model
 		$query = $this->db->query($sql, $param);
 
 		return $query->row_array();
+	}
+
+	function get_forgot($sidx, $sord, $limit_rows, $start, $search)
+	{
+		$param = array();
+
+		$sql = "SELECT * FROM kis_user WHERE password_temp IS NOT NULL AND id_user LIKE ? ";
+
+		$param[] = '%' . $search . '%';
+
+		if ($sidx != '') {
+			$sql .= 'ORDER BY ' . $sidx . ' ' . $sord . ' ';
+		}
+
+		if ($limit_rows != '' and $start != '') {
+			$sql .= 'LIMIT ' . $limit_rows . ' OFFSET ' . $start;
+		}
+
+		$query = $this->db->query($sql, $param);
+
+		return $query->result_array();
 	}
 
 	function get_cif($noanggota)
