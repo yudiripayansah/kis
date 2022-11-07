@@ -9,7 +9,9 @@ class Auth extends RestController
     function __construct()
     {
         parent::__construct();
+
         $this->load->model('model_auth');
+
         date_default_timezone_set('Asia/Jakarta');
     }
 
@@ -34,6 +36,53 @@ class Auth extends RestController
     function index()
     {
         echo 'Test API Sukses';
+    }
+
+    function forgot_password_post()
+    {
+        $username = $this->input->post('username');
+
+        $berkah = 'Semoga Allah melindungi sistem ini dari serangan orang-orang yang tidak bertanggung jawab. Aamiin Allahumma Aamiin';
+
+        $new_password = substr(sha1(date('Y-m-d H:i:s')), 0, 6);
+
+        // Cek Username ke tabel kis_user
+        $check = $this->model_auth->check_username($username);
+
+        $count = count($check);
+
+        if ($count > 0) {
+            $data = array(
+                'password' => sha1($berkah . $new_password),
+                'password_temp' => $new_password
+            );
+
+            $param = array('id_user' => $username);
+
+            $update = $this->model_auth->update('kis_user', $data, $param);
+
+            if ($update === TRUE) {
+                $res = [
+                    'status' => TRUE,
+                    'msg' => 'Reset Password Berhasil! Silakkan hubungi Petugas Anda',
+                    'data' => [$this->input->post()]
+                ];
+            } else {
+                $res = [
+                    'status' => FALSE,
+                    'msg' => 'Maaf! Reset Password belum berhasil. Silakkan ulangi beberapa saat lagi',
+                    'data' => $this->input->post()
+                ];
+            }
+        } else {
+            $res = [
+                'status' => FALSE,
+                'msg' => 'Maaf! Akun Anda tidak ditemukan',
+                'data' => $this->input->post()
+            ];
+        }
+
+        $this->response($res, 200);
     }
 
     function check_username_post()
@@ -127,8 +176,9 @@ class Auth extends RestController
 
         $token = $this->generate_token($id_user, $password, $tipe_user, $last_login);
 
-        if ($check['password'] == $password) {
+        if ($check['password'] == null) { // KHUSUS ANGGOTA PERTAMA KALI LOGIN
             $data = array(
+                'password' => $password,
                 'last_login' => $last_login,
                 'token' => $token[0]
             );
@@ -159,45 +209,86 @@ class Auth extends RestController
                 ];
             }
         } else {
-            if ($check['password'] == null) {
-                $data = array(
-                    'password' => $password,
-                    'last_login' => $last_login,
-                    'token' => $token[0]
-                );
-
-                $param = array('id_user' => $id_user);
-
-                $update = $this->model_auth->update('kis_user', $data, $param);
-
-                if ($update === TRUE) {
-                    $userAccount = array(
-                        'id_user' => $id_user,
-                        'tipe_user' => $tipe_user,
-                        'last_login' => $last_login
+            if ($check['password_temp'] == NULL) { // BUKAN ANGGOTA YANG LUPA PASSWORD
+                if ($check['password'] == $password) {
+                    $data = array(
+                        'last_login' => $last_login,
+                        'token' => $token[0]
                     );
 
-                    $res = [
-                        'status' => TRUE,
-                        'msg' => 'Login Berhasil! Anda akan dialihkan ke halaman Dashboard',
-                        'data' => $userAccount,
-                        'token' => $token[0]
-                    ];
+                    $param = array('id_user' => $id_user);
+
+                    $update = $this->model_auth->update('kis_user', $data, $param);
+
+                    if ($update === TRUE) {
+                        $userAccount = array(
+                            'id_user' => $id_user,
+                            'tipe_user' => $tipe_user,
+                            'last_login' => $last_login
+                        );
+
+                        $res = [
+                            'status' => TRUE,
+                            'msg' => 'Login Berhasil! Anda akan dialihkan ke halaman Dashboard',
+                            'data' => $userAccount,
+                            'token' => $token[0]
+                        ];
+                    } else {
+                        $res = [
+                            'status' => FALSE,
+                            'msg' => 'Maaf! Login tidak berhasil',
+                            'data' => ['input' => $this->input->post()],
+                            'token' => NULL
+                        ];
+                    }
                 } else {
                     $res = [
                         'status' => FALSE,
-                        'msg' => 'Maaf! Login tidak berhasil',
-                        'data' => ['input' => $this->input->post()],
+                        'msg' => 'Maaf! Password Anda salah',
+                        'data' => $this->input->post(),
                         'token' => NULL
                     ];
                 }
-            } else {
-                $res = [
-                    'status' => FALSE,
-                    'msg' => 'Maaf! Password Anda salah',
-                    'data' => $this->input->post(),
-                    'token' => NULL
-                ];
+            } else { // KHUSUS ANGGOTA YANG LUPA PASSWORD
+                if ($check['password_temp'] == $word) {
+                    $data = array(
+                        'password' => $password,
+                        'password_temp' => NULL
+                    );
+
+                    $param = array('id_user' => $id_user);
+
+                    $update = $this->model_auth->update('kis_user', $data, $param);
+
+                    if ($update === TRUE) {
+                        $userAccount = array(
+                            'id_user' => $id_user,
+                            'tipe_user' => $tipe_user,
+                            'last_login' => $last_login
+                        );
+
+                        $res = [
+                            'status' => TRUE,
+                            'msg' => 'Login Berhasil! Anda akan dialihkan ke halaman Dashboard',
+                            'data' => $userAccount,
+                            'token' => $token[0]
+                        ];
+                    } else {
+                        $res = [
+                            'status' => FALSE,
+                            'msg' => 'Maaf! Login tidak berhasil',
+                            'data' => ['input' => $this->input->post()],
+                            'token' => NULL
+                        ];
+                    }
+                } else {
+                    $res = [
+                        'status' => FALSE,
+                        'msg' => 'Maaf! Anda tidak menggunakan Password baru',
+                        'data' => $this->input->post(),
+                        'token' => NULL
+                    ];
+                }
             }
         }
 
