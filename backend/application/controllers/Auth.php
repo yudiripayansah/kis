@@ -351,16 +351,14 @@ class Auth extends RestController
                             $res = [
                                 'status' => FALSE,
                                 'msg' => 'Maaf! Password dan Konfirmasi Password belum sama',
-                                'data' => $this->input->post(),
-                                'token' => NULL
+                                'data' => $this->input->post()
                             ];
                         }
                     } else {
                         $res = [
                             'status' => FALSE,
                             'msg' => 'Maaf! Username tidak ditemukan',
-                            'data' => $this->input->post(),
-                            'token' => NULL
+                            'data' => $this->input->post()
                         ];
                     }
                 }
