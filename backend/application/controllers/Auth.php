@@ -294,4 +294,91 @@ class Auth extends RestController
 
         $this->response($res, 200);
     }
+
+    function change_password_post()
+    {
+        $headers = $this->input->request_headers();
+        $token = (isset($headers['token'])) ? $headers['token'] : FALSE;
+
+        $username = $this->input->post('username');
+        $word = $this->input->post('password');
+        $confirm_password = $this->input->post('confirm_password');
+
+        $berkah = 'Semoga Allah melindungi sistem ini dari serangan orang-orang yang tidak bertanggung jawab. Aamiin Allahumma Aamiin';
+
+        $password = sha1($berkah . $word);
+
+        $check = $this->model_auth->check_username($username);
+
+        $count = count($check);
+
+        $now = date('Y-m-d');
+
+        if ($token) {
+            $check_token = $this->model_auth->check_token($token);
+
+            if ($check_token['cnt'] > 0) {
+                $check_expired = $this->model_auth->check_expired($now, $token);
+
+                if ($check_expired['expired'] > 7) {
+                    $res = [
+                        'status' => FALSE,
+                        'msg' => 'Token Expired',
+                        'data' => NULL
+                    ];
+                } else {
+                    if ($count > 0) {
+                        if ($word == $confirm_password) {
+                            $data = array('password' => $password);
+                            $param = array('id_user' => $username);
+
+                            $update = $this->model_auth->update('kis_user', $data, $param);
+
+                            if ($update === TRUE) {
+                                $res = [
+                                    'status' => TRUE,
+                                    'msg' => 'Berhasil! Password berhasil diubah',
+                                    'data' => $data
+                                ];
+                            } else {
+                                $res = [
+                                    'status' => FALSE,
+                                    'msg' => 'Maaf! Password tidak berhasil diubah',
+                                    'data' => ['input' => $this->input->post()]
+                                ];
+                            }
+                        } else {
+                            $res = [
+                                'status' => FALSE,
+                                'msg' => 'Maaf! Password dan Konfirmasi Password belum sama',
+                                'data' => $this->input->post(),
+                                'token' => NULL
+                            ];
+                        }
+                    } else {
+                        $res = [
+                            'status' => FALSE,
+                            'msg' => 'Maaf! Username tidak ditemukan',
+                            'data' => $this->input->post(),
+                            'token' => NULL
+                        ];
+                    }
+                }
+            } else {
+                $res = [
+                    'status' => FALSE,
+                    'msg' => 'Token Invalid',
+                    'data' => NULL
+                ];
+            }
+        } else {
+            $res = [
+                'status' => FALSE,
+                'msg' => 'No Token Provided',
+                'data' => NULL
+            ];
+        }
+
+        $this->response($res, 200);
+    }
 }
