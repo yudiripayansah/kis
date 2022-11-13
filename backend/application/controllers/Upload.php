@@ -29,6 +29,7 @@ class Upload extends CI_Controller
                 'status' => $decode[$i]->status,
                 'simpok' => $decode[$i]->simpok,
                 'simwa' => $decode[$i]->simwa,
+                'simwa4' => $decode[$i]->simwa4,
                 'sukarela' => $decode[$i]->sukarela,
                 'umroh' => $decode[$i]->umroh,
                 'qurban' => $decode[$i]->qurban,
