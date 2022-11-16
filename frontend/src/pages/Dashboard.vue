@@ -18,6 +18,7 @@
             <h2>Hi, {{profile.nama}}</h2>
             <h3>{{profile.noanggota}}</h3>
             <h3>{{profile.majelis}} <small>({{profile.desa}})</small></h3>
+            <router-link to="/ubah-password">Ubah Password</router-link>
           </div>
           <div class="pg-profile-box-text" v-else>
             <h2>Hi, Pengelola</h2>
@@ -29,42 +30,95 @@
         </div>
       </div>
       <div class="pg-dashboard-nav">
-        <router-link to="/anggota" class="color-3" v-if="profile.jumlah">
-          <div>
-            <span>Jumlah Anggota</span>
-            {{profile.jumlah}}
-          </div>
-        </router-link>
-        <router-link :to="Number(user.tipe_user) == 2 ? `#` : `/saldo/simpok`">
-          <div>
-            <span>Saldo Simpok</span>
-            Rp {{profile.simpok}}
-          </div>
-        </router-link>
-        <router-link :to="Number(user.tipe_user) == 2 ? `#` : `/saldo/simwa`" class="color-1">
-          <div>
-            <span>Saldo Simwa</span>
-            Rp {{profile.simwa}}
-          </div>
-        </router-link>
-        <router-link :to="Number(user.tipe_user) == 2 ? `#` : `/saldo/sukarela`" class="color-2">
-          <div>
-            <span>Saldo Sukarela</span>
-            Rp {{profile.sukarela}}
-          </div>
-        </router-link>
-        <router-link :to="Number(user.tipe_user) == 2 ? `#` : `/saldo/tabungan-berjangka`" class="color-3">
-          <div>
-            <span>Saldo Tabungan Berjangka</span>
-            Rp {{profile.saldo_deposito}}
-          </div>
-        </router-link>
-        <router-link :to="Number(user.tipe_user) == 2 ? `#` : `/saldo/pembiayaan`" class="color-4">
-          <div>
-            <span>Saldo Pembiayaan</span>
-            Rp {{profile.saldo_outstanding}}
-          </div>
-        </router-link>
+        <b-row>
+          <b-col cols="12">
+            <router-link to="#" class="color-3" v-if="profile.jumlah">
+              <div class="py-2">
+                <span>Jumlah Anggota</span>
+                {{profile.jumlah}}
+              </div>
+            </router-link>
+          </b-col>
+          <b-col cols="12">
+            <router-link :to="Number(user.tipe_user) == 2 ? `#` : `/saldo/simpok`">
+              <div class="py-2">
+                <span>Simpok</span>
+                Rp {{profile.simpok}}
+              </div>
+            </router-link>
+          </b-col>
+          <b-col cols="6">
+            <router-link :to="Number(user.tipe_user) == 2 ? `#` : `/saldo/simwam`" class="color-1">
+              <div class="py-2">
+                <span>Simwa Mingguan</span>
+                Rp {{profile.simwa}}
+              </div>
+            </router-link>
+          </b-col>
+          <b-col cols="6">
+            <router-link :to="Number(user.tipe_user) == 2 ? `#` : `/saldo/umroh`" class="color-4">
+              <div class="py-2">
+                <span>Umroh</span>
+                Rp {{profile.umroh}}
+              </div>
+            </router-link>
+          </b-col>
+          <b-col cols="6">
+            <router-link :to="Number(user.tipe_user) == 2 ? `#` : `/saldo/simwa`" class="color-3">
+              <div class="py-2">
+                <span>Simwa 4%</span>
+                Rp {{profile.simwa4}}
+              </div>
+            </router-link>
+          </b-col>
+          <b-col cols="6">
+            <router-link :to="Number(user.tipe_user) == 2 ? `#` : `/saldo/qurban`" class="color-2">
+              <div class="py-2">
+                <span>Qurban</span>
+                Rp {{profile.qurban}}
+              </div>
+            </router-link>
+          </b-col>
+          <b-col cols="6">
+            <router-link :to="Number(user.tipe_user) == 2 ? `#` : `/saldo/sukarela`" class="color-2">
+              <div class="py-2">
+                <span>Sukarela</span>
+                Rp {{profile.sukarela}}
+              </div>
+            </router-link>
+          </b-col>
+          <b-col cols="6">
+            <router-link :to="Number(user.tipe_user) == 2 ? `#` : `/saldo/pendidikan`">
+              <div class="py-2">
+                <span>Pendidikan</span>
+                Rp {{profile.pendidikan}}
+              </div>
+            </router-link>
+          </b-col>
+          <b-col cols="6">
+            <router-link :to="Number(user.tipe_user) == 2 ? `#` : `/saldo/pembiayaan`" class="color-4">
+              <div class="py-2">
+                <span>Pembiayaan</span>
+                Rp {{profile.saldo_outstanding}}
+              </div>
+            </router-link>
+          </b-col>
+          <b-col cols="6">
+            <router-link :to="Number(user.tipe_user) == 2 ? `#` : `/saldo/tabungan-berjangka`" class="color-3">
+              <div class="py-2">
+                <span>Berjangka</span>
+                Rp {{profile.saldo_deposito}}
+              </div>
+            </router-link>
+          </b-col>
+          <b-col cols="12">
+            <router-link to="/anggota" v-if="profile.jumlah">
+              <div class="py-3">
+                <h6 class="m-0"><b>Lihat Anggota</b></h6>
+              </div>
+            </router-link>
+          </b-col>
+        </b-row>
       </div>
     </div>
   </div>
@@ -80,7 +134,12 @@ export default {
   data(){
     return {
       app : settings,
-      profile : Object
+      profile : {
+        nama: null,
+        noanggota: null,
+        majelis: null,
+        desa: null,
+      }
     }
   },
   computed: {
@@ -101,7 +160,7 @@ export default {
       }
       let config = {
         headers: {
-          'Token': this.user.token
+          'token': this.user.token
         }
       }
       axios

@@ -28,7 +28,7 @@
         <b-button type="submit" variant="default" class="fm-btn mt-3 text-light" :disabled="form.loading">
           <b-spinner small variant="light" label="Spinning" v-show="form.loading" class="mr-2"/> SIGN IN
         </b-button>
-        <!-- <router-link to="/forgot-password" class="mt-1 pg-link">Forgot Password?</router-link> -->
+        <router-link to="/forgot-password" class="mt-1 pg-link">Forgot Password?</router-link>
       </form>
     </div>
   </div>

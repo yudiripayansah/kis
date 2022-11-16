@@ -21,6 +21,14 @@ const routes = [
         }
       },
       {
+        path: 'ubah-password',
+        name: 'Ubah Password',
+        component: () => import(/* webpackChunkName: "ubah-password" */ '../pages/UbahPassword.vue'),
+        meta: {
+          title: 'Ubah Password - KIS',
+        }
+      },
+      {
         path: 'saldo/:type/:noanggota?',
         name: 'Saldo',
         component: () => import(/* webpackChunkName: "Saldo" */ '../pages/Saldo.vue'),
@@ -29,7 +37,7 @@ const routes = [
         }
       },
       {
-        path: 'anggota',
+        path: 'anggota/:rembug?/:anggota?',
         name: 'Anggota',
         component: () => import(/* webpackChunkName: "anggota" */ '../pages/Anggota.vue'),
         meta: {
@@ -44,6 +52,14 @@ const routes = [
     component: () => import(/* webpackChunkName: "login" */ '../pages/Login.vue'),
     meta: {
       title: 'Login - KIS',
+    }
+  },
+  {
+    path: '/forgot-password',
+    name: 'Forgot Password',
+    component: () => import(/* webpackChunkName: "forgot" */ '../pages/Forgot.vue'),
+    meta: {
+      title: 'Forgot Password - KIS',
     }
   }
 ]
