@@ -2,7 +2,6 @@
 
 class Model_information extends CI_Model
 {
-
 	function check_token($token)
 	{
 		$sql = "SELECT COUNT(*) AS cnt FROM kis_user WHERE token = ?";
@@ -23,6 +22,27 @@ class Model_information extends CI_Model
 		$query = $this->db->query($sql, $param);
 
 		return $query->row_array();
+	}
+
+	function get_forgot($sidx, $sord, $limit_rows, $start, $search)
+	{
+		$param = array();
+
+		$sql = "SELECT * FROM kis_user WHERE password_temp IS NOT NULL AND id_user LIKE ? ";
+
+		$param[] = '%' . $search . '%';
+
+		if ($sidx != '') {
+			$sql .= 'ORDER BY ' . $sidx . ' ' . $sord . ' ';
+		}
+
+		if ($limit_rows != '' and $start != '') {
+			$sql .= 'LIMIT ' . $limit_rows . ' OFFSET ' . $start;
+		}
+
+		$query = $this->db->query($sql, $param);
+
+		return $query->result_array();
 	}
 
 	function get_cif($noanggota)
@@ -64,7 +84,10 @@ class Model_information extends CI_Model
 		COUNT(*) AS jumlah,
 		COALESCE(SUM(simpok),0) AS simpok,
 		COALESCE(SUM(simwa),0) AS simwa,
-		COALESCE(SUM(sukarela),0) AS sukarela
+		COALESCE(SUM(sukarela),0) AS sukarela,
+		COALESCE(SUM(umroh),0) AS umroh,
+		COALESCE(SUM(qurban),0) AS qurban,
+		COALESCE(SUM(pendidikan),0) AS pendidikan
 		FROM kis_anggota";
 
 		$query = $this->db->query($sql);
@@ -90,18 +113,18 @@ class Model_information extends CI_Model
 		return $query->row_array();
 	}
 
-	function get_detail_saving($noanggota, $jenis_trx)
+	function get_detail_saving($noanggota, $jenis_trx, $from_date, $thru_date)
 	{
-		$sql = "SELECT * FROM kis_trx_simpanan WHERE noanggota = ? AND jenis_trx = ? ORDER BY trx_date ASC";
+		$sql = "SELECT * FROM kis_trx_simpanan WHERE noanggota = ? AND jenis_trx = ? AND trx_date BETWEEN ? AND ? ORDER BY trx_date,notran ASC";
 
-		$param = array($noanggota, $jenis_trx);
+		$param = array($noanggota, $jenis_trx, $from_date, $thru_date);
 
 		$query = $this->db->query($sql, $param);
 
 		return $query->result_array();
 	}
 
-	function get_detail_deposito($noanggota)
+	function get_detail_deposito($noanggota, $from_date, $thru_date)
 	{
 		$sql = "SELECT
 		ktd.notran,
@@ -113,8 +136,19 @@ class Model_information extends CI_Model
 		ktd.saldo
 		FROM kis_trx_deposito AS ktd
 		JOIN kis_deposito AS kd ON kd.nomrek = ktd.nomrek
-		WHERE kd.noanggota = ?
+		WHERE kd.noanggota = ? AND trx_date BETWEEN ? AND ?
 		ORDER BY ktd.trx_date ASC";
+
+		$param = array($noanggota, $from_date, $thru_date);
+
+		$query = $this->db->query($sql, $param);
+
+		return $query->result_array();
+	}
+
+	function get_account_financing($noanggota)
+	{
+		$sql = "SELECT * FROM kis_pembiayaan WHERE noanggota = ?";
 
 		$param = array($noanggota);
 
@@ -123,7 +157,7 @@ class Model_information extends CI_Model
 		return $query->result_array();
 	}
 
-	function get_detail_financing($noanggota)
+	function get_detail_financing($nomrek)
 	{
 		$sql = "SELECT
 		ktp.notran,
@@ -131,14 +165,15 @@ class Model_information extends CI_Model
 		ktp.tgl_bayar,
 		ktp.angs_ke,
 		ktp.angs_pokok,
+		ktp.angs_margin,
 		ktp.saldo_pokok,
 		ktp.saldo_margin
 		FROM kis_trx_pembiayaan AS ktp
 		JOIN kis_pembiayaan AS kp ON kp.nomrek = ktp.nomrek
-		WHERE kp.noanggota = ?
+		WHERE kp.nomrek = ?
 		ORDER BY ktp.tgl_jtempo ASC";
 
-		$param = array($noanggota);
+		$param = array($nomrek);
 
 		$query = $this->db->query($sql, $param);
 

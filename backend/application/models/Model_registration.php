@@ -2,7 +2,6 @@
 
 class Model_registration extends CI_Model
 {
-
     function get_user($sidx, $sord, $limit_rows, $start, $search)
     {
         $param = array();
