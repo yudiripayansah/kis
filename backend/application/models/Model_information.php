@@ -84,6 +84,7 @@ class Model_information extends CI_Model
 		COUNT(*) AS jumlah,
 		COALESCE(SUM(simpok),0) AS simpok,
 		COALESCE(SUM(simwa),0) AS simwa,
+		COALESCE(SUM(simwa4),0) AS simwa4,
 		COALESCE(SUM(sukarela),0) AS sukarela,
 		COALESCE(SUM(umroh),0) AS umroh,
 		COALESCE(SUM(qurban),0) AS qurban,
