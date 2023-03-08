@@ -40,7 +40,7 @@
               <b-col cols="6">
                 <router-link :to="`/saldo/simwam/${selectedAnggota.noanggota}`" class="color-1">
                   <div class="py-2">
-                    <span>Simwa Mingguan</span>
+                    <span>Simwa Minggon</span>
                     Rp {{saldo.simwa}}
                   </div>
                 </router-link>
@@ -64,7 +64,7 @@
               <b-col cols="6">
                 <router-link :to="`/saldo/qurban/${selectedAnggota.noanggota}`" class="color-2">
                   <div class="py-2">
-                    <span>Qurban</span>
+                    <span>Rumah</span>
                     Rp {{saldo.qurban}}
                   </div>
                 </router-link>

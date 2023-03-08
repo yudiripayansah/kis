@@ -50,7 +50,7 @@
           <b-col cols="6">
             <router-link :to="Number(user.tipe_user) == 2 ? `#` : `/saldo/simwam`" class="color-1">
               <div class="py-2">
-                <span>Simwa Mingguan</span>
+                <span>Simwa Minggon</span>
                 Rp {{profile.simwa}}
               </div>
             </router-link>
@@ -74,7 +74,7 @@
           <b-col cols="6">
             <router-link :to="Number(user.tipe_user) == 2 ? `#` : `/saldo/qurban`" class="color-2">
               <div class="py-2">
-                <span>Qurban</span>
+                <span>Rumah</span>
                 Rp {{profile.qurban}}
               </div>
             </router-link>

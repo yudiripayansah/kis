@@ -5,7 +5,7 @@
       <!-- <h1>Mobile {{app.koperasi_name}}</h1> -->
       <h6 class="text-capitalize">Saldo {{ $route.params.type }}</h6>
       <div class="pg-header-nav-btn">
-        <router-link :to="$route.params.noanggota ? `/anggota` :`/dashboard`">
+        <router-link :to="$route.params.noanggota ? `/anggota/${profile.majelis}/${profile.noanggota}` :`/dashboard`">
           <i class="fas fa-arrow-left"></i>
         </router-link>
       </div>
