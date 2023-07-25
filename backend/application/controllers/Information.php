@@ -604,6 +604,7 @@ class Information extends RestController
                     $data = array(
                         'simpok' => currency($get_cif['simpok']),
                         'simwa' => currency($get_cif['simwa']),
+                        'simwa4' => currency($get_cif['simwa4']),
                         'sukarela' => currency($get_cif['sukarela']),
                         'umroh' => currency($get_cif['umroh']),
                         'qurban' => currency($get_cif['qurban']),

@@ -69,7 +69,7 @@ class Model_information extends CI_Model
 
 	function get_financing($noanggota)
 	{
-		$sql = "SELECT COALESCE(SUM(saldo_pkk+saldo_mgn),0) AS saldo_outstanding FROM kis_pembiayaan WHERE status = '1' AND noanggota = ?";
+		$sql = "SELECT COALESCE(SUM(saldo_pkk),0) AS saldo_outstanding FROM kis_pembiayaan WHERE status = '1' AND noanggota = ?";
 
 		$param = array($noanggota);
 
@@ -84,11 +84,12 @@ class Model_information extends CI_Model
 		COUNT(*) AS jumlah,
 		COALESCE(SUM(simpok),0) AS simpok,
 		COALESCE(SUM(simwa),0) AS simwa,
+		COALESCE(SUM(simwa4),0) AS simwa4,
 		COALESCE(SUM(sukarela),0) AS sukarela,
 		COALESCE(SUM(umroh),0) AS umroh,
 		COALESCE(SUM(qurban),0) AS qurban,
 		COALESCE(SUM(pendidikan),0) AS pendidikan
-		FROM kis_anggota";
+		FROM kis_anggota WHERE status = '1'";
 
 		$query = $this->db->query($sql);
 
@@ -106,7 +107,7 @@ class Model_information extends CI_Model
 
 	function get_sum_financing()
 	{
-		$sql = "SELECT COALESCE(SUM(saldo_pkk+saldo_mgn),0) AS saldo_outstanding FROM kis_pembiayaan WHERE status = '1'";
+		$sql = "SELECT COALESCE(SUM(saldo_pkk),0) AS saldo_outstanding FROM kis_pembiayaan WHERE status = '1'";
 
 		$query = $this->db->query($sql);
 
